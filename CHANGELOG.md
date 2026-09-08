@@ -8,5 +8,6 @@
 - Creación Inicial de la template
 - Creación del archivo template-web\frontend\eslint.config.mjs
 - Corregido el contenido de template-web\.github\workflows\ci.yml
+- Se agrega la plantilla para los PR
 
 
