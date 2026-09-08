@@ -1,0 +1,44 @@
+# ============================================================
+#  Backend — Laravel (Development)
+#  Incluye Xdebug + todos los paquetes de desarrollo
+# ============================================================
+FROM php:8.4-fpm-alpine
+
+# System dependencies
+RUN apk add --no-cache \
+    git \
+    curl \
+    libpng-dev \
+    libxml2-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    postgresql-dev \
+    oniguruma-dev \
+    linux-headers \
+    $PHPIZE_DEPS
+
+# PHP extensions
+RUN docker-php-ext-install \
+    pdo \
+    pdo_pgsql \
+    pgsql \
+    bcmath \
+    gd \
+    zip \
+    xml \
+    mbstring
+
+# Xdebug
+RUN pecl install xdebug && docker-php-ext-enable xdebug
+
+# Composer
+COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+# El código se monta como volumen en docker-compose.dev.yml
+# (no se copia aquí para hot-reload)
+
+EXPOSE 9000
+CMD ["php-fpm"]

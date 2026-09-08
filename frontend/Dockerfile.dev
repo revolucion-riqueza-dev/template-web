@@ -1,0 +1,19 @@
+# ============================================================
+#  Frontend — Next.js (Development)
+#  Hot-reload activado; el código se monta como volumen.
+# ============================================================
+FROM node:20-alpine
+
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Instalar dependencias primero (capa cacheada)
+COPY package.json package-lock.json ./
+RUN npm install
+
+# El resto del código lo provee el volumen en docker-compose.dev.yml
+
+EXPOSE 3000
+ENV NEXT_TELEMETRY_DISABLED=1
+
+CMD ["npm", "run", "dev"]

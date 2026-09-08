@@ -1,0 +1,105 @@
+/* ── Tailwind base layers ─────────────────────────────────── */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Variables CSS globales ──────────────────────────────────
+   Úsalas con: var(--color-primary) en CSS puro si lo necesitas
+   En Tailwind usa directamente: bg-primary-500, text-primary-600, etc.
+──────────────────────────────────────────────────────────── */
+@layer base {
+  :root {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  /* Reset tipográfico */
+  html {
+    @apply antialiased scroll-smooth;
+  }
+
+  body {
+    @apply bg-white text-gray-900 font-sans;
+  }
+
+  /* Dark mode (opcional — descomenta si lo usas) */
+  /* .dark body {
+    @apply bg-gray-950 text-gray-50;
+  } */
+}
+
+/* ── Componentes reutilizables con @apply ────────────────────
+   Define aquí clases compuestas que se repiten mucho.
+   Úsalas en JSX: className="btn btn-primary"
+──────────────────────────────────────────────────────────── */
+@layer components {
+  /* Botones */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2
+           px-4 py-2 rounded-lg text-sm font-medium
+           transition-colors duration-150
+           focus:outline-none focus:ring-2 focus:ring-offset-2
+           disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary-500 text-white
+           hover:bg-primary-600
+           focus:ring-primary-500;
+  }
+
+  .btn-secondary {
+    @apply btn bg-white text-gray-700 border border-gray-300
+           hover:bg-gray-50
+           focus:ring-primary-500;
+  }
+
+  .btn-danger {
+    @apply btn bg-red-500 text-white
+           hover:bg-red-600
+           focus:ring-red-500;
+  }
+
+  /* Inputs */
+  .input {
+    @apply block w-full px-3 py-2
+           rounded-lg border border-gray-300
+           text-sm text-gray-900 placeholder-gray-400
+           bg-white
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
+           disabled:bg-gray-50 disabled:cursor-not-allowed
+           transition-shadow duration-150;
+  }
+
+  .input-error {
+    @apply input border-red-400 focus:ring-red-400;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-white rounded-xl border border-gray-200 shadow-card p-6;
+  }
+
+  /* Labels */
+  .label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+
+  /* Texto de error bajo inputs */
+  .error-text {
+    @apply text-xs text-red-500 mt-1;
+  }
+}
+
+/* ── Utilidades extra ────────────────────────────────────────
+   Clases de una sola responsabilidad que Tailwind no tiene por defecto.
+──────────────────────────────────────────────────────────── */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

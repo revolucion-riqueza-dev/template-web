@@ -1,0 +1,36 @@
+# ── Variables de entorno ───────────────────────────────────
+.env
+.env.local
+.env.production
+.env.*.local
+!.env.example
+
+# ── Backend (Laravel) ──────────────────────────────────────
+backend/vendor/
+backend/node_modules/
+backend/.env
+backend/storage/logs/*.log
+backend/bootstrap/cache/*.php
+backend/.phpunit.cache/
+backend/.phpunit.result.cache
+
+# ── Frontend (Next.js) ─────────────────────────────────────
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env.local
+frontend/.env.production
+
+# ── Docker ─────────────────────────────────────────────────
+docker-compose.override.yml
+
+# ── Sistema ────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.log
+
+# ── IDEs ───────────────────────────────────────────────────
+.idea/
+.vscode/settings.json
+*.suo
+*.user
