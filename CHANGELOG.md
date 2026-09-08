@@ -1,16 +1,12 @@
-# Changelog
+# Changelog - Template Web
 
-Todos los cambios notables de este proyecto están documentados aquí.
-El formato se basa en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 
-## [Unreleased]
 
-### Added
-- Estructura inicial del template
+## [2026-09-08]
 
 ---
+- Creación Inicial de la template
+- Creación del archivo template-web\frontend\eslint.config.mjs
+- Corregido el contenido de template-web\.github\workflows\ci.yml
 
-## [1.0.0] - YYYY-MM-DD
 
-### Added
-- Primera versión del proyecto

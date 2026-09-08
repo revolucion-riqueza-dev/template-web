@@ -54,7 +54,8 @@
 | `Makefile` | Comandos del proyecto (`make up`, `make migrate`...) |
 | `docs/requerimientos/` | Documentos LRQ del proyecto |
 | `docs/documentacion-tecnica/` | Documentos DTE del proyecto |
-| `docs/arquitectura/` | Diagramas y decisiones de arquitectura |
+| `docs/actas/` | Actas de Reunion |
+| `docs/manuales/` | Manuales de Uso |
 
 ---
 
