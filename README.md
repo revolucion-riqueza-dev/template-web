@@ -1,19 +1,17 @@
 # [CÓDIGO-PROYECTO] | [Nombre del Proyecto Web]
 
-> ⚙️ **Instrucciones para usar esta plantilla:** Reemplaza todas las líneas entre corchetes `[...]` con la información real del proyecto, luego elimina este bloque de instrucciones antes del primer commit.
-
 | Campo | Valor |
 |---|---|
-| **Programa / Área** | [Ej: Marketing / Desarrollo / Ventas] |
-| **Responsable** | [Nombre del responsable] |
+| **Programa / Área** | [Área] |
+| **Responsable** | [Nombre] |
 | **Estado** | En desarrollo |
-| **Creado** | [AAAA-MM-DD] |
+| **Creado** | [YYYY-MM-DD] |
 
 ---
 
 ## ¿Qué es este proyecto?
 
-[Descripción breve: qué construye, para quién es y cuál es el objetivo principal.]
+[Descripción corta del proyecto]
 
 ---
 
@@ -54,8 +52,7 @@
 | `Makefile` | Comandos del proyecto (`make up`, `make migrate`...) |
 | `docs/requerimientos/` | Documentos LRQ del proyecto |
 | `docs/documentacion-tecnica/` | Documentos DTE del proyecto |
-| `docs/actas/` | Actas de Reunion |
-| `docs/manuales/` | Manuales de Uso |
+| `docs/arquitectura/` | Diagramas y decisiones de arquitectura |
 
 ---
 
@@ -67,24 +64,18 @@ Antes de empezar, asegúrate de tener instalado lo siguiente en tu máquina:
 |---|---|---|
 | [Docker Desktop](https://www.docker.com/products/docker-desktop/) | Correr todos los servicios (PHP, Node, PostgreSQL, Nginx) | `docker --version` |
 | [Git](https://git-scm.com/) | Control de versiones | `git --version` |
-| [PHP 8.4](https://www.php.net/downloads) | Solo para crear el proyecto Laravel inicial | `php --version` |
+| [PHP 8.4](https://www.php.net/downloads) | Solo para el script de configuración inicial | `php --version` |
 | [Composer](https://getcomposer.org/) | Gestor de dependencias de PHP | `composer --version` |
-| [Laravel Installer](https://laravel.com/docs/12.x) | Crear el proyecto Laravel | `laravel --version` |
 | [Node.js 20+](https://nodejs.org/) | Solo si quieres correr el frontend sin Docker | `node --version` |
 | `make` | Ejecutar los comandos del proyecto | `make --version` |
 
-> **Nota:** Una vez que el proyecto esté corriendo con Docker, solo necesitas Docker y Git para el día a día. PHP, Composer y Node solo se necesitan para el paso de instalación inicial.
+> **Nota:** Una vez que el proyecto esté corriendo con Docker, solo necesitas Docker y Git para el día a día. PHP y Composer solo se necesitan para el script de configuración inicial.
 
-### Instalación de `make` en Windows
+### Instalación en Windows (paso a paso)
 
-En macOS y Linux `make` ya viene instalado. En **Windows** hay que instalarlo manualmente. La forma más sencilla es con [Chocolatey](https://chocolatey.org/install):
+En macOS y Linux las herramientas del sistema ya vienen instaladas o se instalan fácilmente. En **Windows** sigue este orden:
 
-```powershell
-# Abrir PowerShell como Administrador y ejecutar:
-choco install make
-```
-
-Si no tienes Chocolatey instalado, primero ejecúta esto en PowerShell como Administrador:
+**1. Instalar Chocolatey** (gestor de paquetes — abre PowerShell como Administrador):
 
 ```powershell
 Set-ExecutionPolicy Bypass -Scope Process -Force
@@ -92,9 +83,45 @@ Set-ExecutionPolicy Bypass -Scope Process -Force
 iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 ```
 
-Luego cierra y vuelve a abrir PowerShell, y ejecuta `choco install make`.
+Cierra y vuelve a abrir PowerShell como Administrador.
 
-Verifica la instalación con `make --version`.
+**2. Instalar PHP 8.4, Composer, Node y make:**
+
+> ⚠️ No uses `choco install php` sin versión — instala la última disponible (puede ser 8.5 o superior). Especifica siempre la versión 8.4:
+
+```powershell
+choco install php --version=8.4.25 -y
+choco install composer nodejs make -y
+```
+
+Cierra y vuelve a abrir PowerShell (para que el PATH se actualice).
+
+**3. Instalar Docker Desktop:**
+
+Descárgalo desde https://www.docker.com/products/docker-desktop/ e instálalo. Requiere reiniciar el equipo.
+
+**4. Habilitar la extensión fileinfo en PHP (solo Windows)**
+
+Antes de continuar, PHP necesita la extensión `fileinfo` activa. Abre el archivo `C:\tools\php84\php.ini` (o la ruta donde se instaló PHP), busca esta línea y quítale el punto y coma:
+
+```ini
+;extension=fileinfo   ← antes
+extension=fileinfo    ← después
+```
+
+Guarda el archivo y cierra el editor. En macOS y Linux esta extensión ya viene habilitada.
+
+**5. Verificar que todo quedó bien:**
+
+```powershell
+php --version       # PHP 8.4.x
+composer --version
+node --version
+docker --version
+make --version
+```
+
+Todos deben responder con su versión antes de continuar.
 
 ---
 
@@ -102,40 +129,94 @@ Verifica la instalación con `make --version`.
 
 Sigue estos pasos **en orden**. Solo se hacen una vez por proyecto.
 
+> **Importante:** en Windows usa **Git Bash** (no PowerShell ni CMD) para ejecutar los comandos de esta sección.
+
 ### Paso 1 — Clonar el repositorio
 
 ```bash
-git clone [URL-del-repo]
-cd [nombre-del-repo]
+git clone [URL-del-repositorio]
+cd [nombre-del-repositorio]
 ```
 
-### Paso 2 — Crear el proyecto Laravel
+### Paso 2 — Preparar el proyecto Laravel
 
-La carpeta `backend/` de esta plantilla contiene las capas de Clean Architecture, pero **no** el proyecto Laravel completo. Laravel se crea con su instalador oficial y luego se combina con la plantilla.
+La carpeta `backend/` de esta plantilla contiene las capas de Clean Architecture, pero **no** el proyecto Laravel completo. Este paso lo prepara.
+
+#### Opción A — Script automático (recomendado)
+
+```bash
+bash setup.sh
+```
+
+El script hace automáticamente los Pasos 2a al 2f que se describen a continuación. Si funciona correctamente, salta directo al Paso 3.
+
+#### Opción B — Manual (si el script falla)
+
+##### Paso 2a — Crear el proyecto Laravel
+
+> **Importante:** No uses `laravel new` directamente — instala la última versión disponible (puede ser 13 o superior). Usa `composer create-project` para fijar la versión 12.
 
 ```bash
 # Desde la raíz del proyecto, renombra temporalmente la carpeta backend
 mv backend backend-arch
 
-# Crea el proyecto Laravel (esto genera toda la estructura de Laravel)
-laravel new backend --no-interaction --php=8.4
+# Crea el proyecto Laravel 12 (fija la versión con composer)
+composer create-project laravel/laravel backend "^12.0"
 
 # Copia las capas de Clean Architecture dentro del proyecto Laravel recién creado
-cp -r backend-arch/app/Domain       backend/app/
-cp -r backend-arch/app/Application  backend/app/
+cp -r backend-arch/app/Domain         backend/app/
+cp -r backend-arch/app/Application    backend/app/
 cp -r backend-arch/app/Infrastructure backend/app/
-cp -r backend-arch/app/Presentation  backend/app/
+cp -r backend-arch/app/Presentation   backend/app/
 
 # Copia también los Dockerfiles y el .env.example
 cp backend-arch/Dockerfile     backend/Dockerfile
 cp backend-arch/Dockerfile.dev backend/Dockerfile.dev
 cp backend-arch/.env.example   backend/.env.example
 
-# Ya no necesitas la carpeta temporal
+# Copia el seeder vacío (reemplaza el seeder por defecto de Laravel)
+cp backend-arch/database/seeders/DatabaseSeeder.php backend/database/seeders/DatabaseSeeder.php
+
+# Elimina la carpeta temporal
 rm -rf backend-arch
+# Windows (PowerShell): Remove-Item -Recurse -Force backend-arch
 ```
 
-### Paso 3 — Registrar el RepositoryServiceProvider en Laravel
+##### Paso 2b — Limpiar archivos de frontend de Laravel
+
+Laravel genera archivos de Vite y frontend que no se usan porque el frontend es Next.js. Elimínalos desde la carpeta `backend/`:
+
+```bash
+rm -rf resources package.json vite.config.js
+```
+
+##### Paso 2c — Eliminar las migraciones por defecto de Laravel
+
+Laravel genera tres migraciones iniciales que no corresponden a tu dominio. Elimínalas desde la carpeta `backend/`:
+
+```bash
+rm database/migrations/0001_01_01_000000_create_users_table.php
+rm database/migrations/0001_01_01_000001_create_cache_table.php
+rm database/migrations/0001_01_01_000002_create_jobs_table.php
+```
+
+> Estas migraciones crean tablas genéricas (`users`, `cache`, `jobs`). En Clean Architecture las migraciones se crean a mano siguiendo las entidades del dominio del proyecto.
+
+> Si copiaste el `DatabaseSeeder.php` desde la plantilla en el Paso 2a, el seeder ya está vacío. Si no, abre `backend/database/seeders/DatabaseSeeder.php` y deja el método `run()` vacío para evitar errores en `make fresh`.
+
+##### Paso 2d — Cambiar el motor de base de datos por defecto
+
+Laravel usa SQLite como motor por defecto. Cámbialo a PostgreSQL en `backend/config/database.php`:
+
+```php
+// Antes:
+'default' => env('DB_CONNECTION', 'sqlite'),
+
+// Después:
+'default' => env('DB_CONNECTION', 'pgsql'),
+```
+
+##### Paso 2e — Registrar el RepositoryServiceProvider en Laravel
 
 Abre el archivo `backend/bootstrap/providers.php` y agrega el provider de la plantilla:
 
@@ -148,30 +229,28 @@ return [
 
 > Este archivo es el que Laravel usa para registrar todos los providers. El `RepositoryServiceProvider` es donde se conectan las interfaces del dominio con las implementaciones concretas de infraestructura.
 
-### Paso 4 — Configurar las variables de entorno
+### Paso 3 — Configurar las variables de entorno
 
 ```bash
-# Variables raíz (usadas por Docker Compose)
 cp .env.example .env
-
-# Variables del backend (usadas por Laravel)
 cp backend/.env.example backend/.env
-
-# Variables del frontend (usadas por Next.js)
 cp frontend/.env.example frontend/.env.local
 ```
 
 Abre cada archivo `.env` y ajusta los valores según tu entorno. Los más importantes son:
 
-| Variable | Archivo | Descripción |
+| Variable | Archivo | Valor para desarrollo local |
 |---|---|---|
-| `DB_DATABASE` | `.env` y `backend/.env` | Nombre de la base de datos |
-| `DB_USERNAME` | `.env` y `backend/.env` | Usuario de PostgreSQL |
-| `DB_PASSWORD` | `.env` y `backend/.env` | Contraseña de PostgreSQL |
+| `COMPOSE_PROJECT_NAME` | `.env` | El código del repositorio en minúsculas con guiones (ej: `cs-web-26-001-terminos-condiciones`). Docker lo usa como prefijo de los contenedores para que no se mezclen con otros proyectos. |
+| `DB_DATABASE` | `.env` y `backend/.env` | El nombre que quieras darle a la BD (ej: `mi_proyecto_db`) |
+| `DB_USERNAME` | `.env` y `backend/.env` | Usuario de PostgreSQL (ej: `postgres`) |
+| `DB_PASSWORD` | `.env` y `backend/.env` | Contraseña que quieras (ej: `postgres`) |
 | `APP_KEY` | `backend/.env` | Se genera automáticamente en el paso siguiente |
-| `NEXT_PUBLIC_API_URL` | `frontend/.env.local` | URL de la API Laravel |
+| `NEXT_PUBLIC_API_URL` | `frontend/.env.local` | `http://localhost:8080/api` (fijo, no cambiar en desarrollo local) |
 
-### Paso 5 — Levantar el entorno con Docker
+> Los valores de `DB_DATABASE`, `DB_USERNAME` y `DB_PASSWORD` los inventas tú — Docker creará la base de datos con esas credenciales. Lo único importante es que sean iguales en `.env` y `backend/.env`.
+
+### Paso 4 — Levantar el entorno con Docker
 
 ```bash
 make install
@@ -181,14 +260,18 @@ Este comando hace todo lo siguiente automáticamente:
 1. Construye las imágenes de Docker para PHP y Next.js
 2. Levanta todos los contenedores (Nginx, Laravel, Next.js, PostgreSQL, Redis, Mailpit)
 3. Instala las dependencias de Composer dentro del contenedor
-4. Genera la `APP_KEY` de Laravel (`php artisan key:generate`)
-5. Instala las dependencias de npm dentro del contenedor
-6. Ejecuta las migraciones de la base de datos
+4. Instala `darkaonline/l5-swagger` para la documentación de la API
+5. Genera la `APP_KEY` de Laravel (`php artisan key:generate`)
+6. Publica los assets de Swagger UI
+7. Ejecuta las migraciones de la base de datos
+8. Genera la documentación Swagger inicial
+9. Instala las dependencias de npm dentro del contenedor
 
 Cuando termine, verás:
 
 ```
-✅  Instalación completa. Accede en http://localhost:8080
+  Instalacion completa. Accede en http://localhost:8080
+  Swagger UI: http://localhost:8080/api/documentation
 ```
 
 ---
@@ -210,6 +293,7 @@ make logs  # Ver logs en tiempo real (Ctrl+C para salir)
 | Aplicación | http://localhost:3000 | Frontend Next.js (acceso directo) |
 | Aplicación (via Nginx) | http://localhost:8080 | Frontend + API en el mismo puerto |
 | API Laravel | http://localhost:8080/api | Endpoints del backend |
+| Swagger UI | http://localhost:8080/api/documentation | Documentación interactiva de la API |
 | Mailpit | http://localhost:8025 | Bandeja de entrada para emails de prueba |
 
 ### Otros comandos útiles
@@ -286,7 +370,7 @@ EasyPanel gestiona los servicios como contenedores Docker, asigna los subdominio
 
 **1. Crear el proyecto en EasyPanel**
 
-En el panel del VPS, crear un nuevo proyecto con el nombre del proyecto (ej: `[CÓDIGO-PROYECTO]`).
+En el panel del VPS, crear un nuevo proyecto con el nombre del proyecto (ej: `CS-WEB-26-001`).
 
 **2. Agregar el servicio de Base de datos**
 
@@ -359,4 +443,4 @@ EasyPanel gestiona los certificados SSL automáticamente. Al asignar el dominio 
 
 ---
 
-> Para más detalles del despliegue, ver el documento **[DTE correspondiente]** en `docs/documentacion-tecnica/`.
+> Para más detalles del despliegue, ver el documento **DTE** correspondiente en `docs/documentacion-tecnica/`.
