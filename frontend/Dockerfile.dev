@@ -8,7 +8,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Instalar dependencias primero (capa cacheada)
-COPY package.json package-lock.json ./
+COPY package.json ./
 RUN npm install
 
 # El resto del código lo provee el volumen en docker-compose.dev.yml
