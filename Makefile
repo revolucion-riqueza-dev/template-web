@@ -69,6 +69,9 @@ test-fe: ## Tests del frontend (Jest)
 	$(COMPOSE_DEV) exec frontend npm test
 
 # ── Instalación inicial ────────────────────────────────────
+setup: ## Configuracion inicial: crea el proyecto Laravel y configura las capas (solo una vez)
+	@bash setup.sh
+
 install: ## Primera instalación: copia .env y genera key de Laravel
 	@cp -n backend/.env.example backend/.env 2>/dev/null || true
 	@cp -n frontend/.env.example frontend/.env.local 2>/dev/null || true
@@ -76,10 +79,16 @@ install: ## Primera instalación: copia .env y genera key de Laravel
 	$(COMPOSE_DEV) build
 	$(COMPOSE_DEV) up -d
 	$(COMPOSE_DEV) exec backend composer install
-	$(COMPOSE_DEV) exec backend php artisan key:generate
+	$(COMPOSE_DEV) exec backend composer require darkaonline/l5-swagger --no-interaction
+	$(COMPOSE_DEV) exec backend php artisan key:generate --force
+	$(COMPOSE_DEV) exec backend php artisan vendor:publish --provider "L5Swagger\L5SwaggerServiceProvider" --no-interaction
 	$(COMPOSE_DEV) exec backend php artisan migrate
+	$(COMPOSE_DEV) exec backend php artisan l5-swagger:generate
 	$(COMPOSE_DEV) exec frontend npm install
-	@echo "\n✅  Instalación completa. Accede en http://localhost:8080\n"
+	@echo ""
+	@echo "  Instalacion completa. Accede en http://localhost:8080"
+	@echo "  Swagger UI: http://localhost:8080/api/documentation"
+	@echo ""
 
 # ── Producción ─────────────────────────────────────────────
 prod-up: ## Levanta producción
